@@ -30,6 +30,8 @@ const ignoreList = ['default'];
 
 const instance = axiosFactory.create({});
 
+const removeFilesList = ['node_modules', 'tsc', 'tsc.cmd', 'tsc.ps1', 'tsserver', 'tsserver.cmd', 'tsserver.ps1'];
+
 const sleep = (ms) => new Promise(resolve => setTimeout(resolve, ms));
 
 const remove = async (file) => {
@@ -40,7 +42,14 @@ const remove = async (file) => {
   } catch (err) {
     console.warn(err.message);
   }
-}
+};
+
+const removeBinariesAndModules = async (pkgPath) => {
+  console.log(`✓ Remove binaries from '${pkgPath}'`);
+  for (let fileId = 0; fileId < removeFilesList.length; fileId++) {
+    await remove(path.join(pkgPath, `./${removeFilesList[fileId]}`));
+  }
+};
 
 describe('module', function () {
 
@@ -81,7 +90,8 @@ describe('module', function () {
       const pkgPath = path.join(__dirname, './cjs');
 
       after(async () => {
-        await remove(path.join(pkgPath, './node_modules'));
+        await removeBinariesAndModules(pkgPath);
+
       });
 
       it('should be able to be loaded with require', async function () {
@@ -95,7 +105,8 @@ describe('module', function () {
       const pkgPath = path.join(__dirname, './esm');
 
       after(async () => {
-        await remove(path.join(pkgPath, './node_modules'));
+        await removeBinariesAndModules(pkgPath);
+
       });
 
       it('should be able to be loaded with import', async function () {
@@ -109,7 +120,8 @@ describe('module', function () {
       const pkgPath = path.join(__dirname, './ts');
 
       after(async () => {
-        await remove(path.join(pkgPath, './node_modules'));
+        await removeBinariesAndModules(pkgPath);
+
       });
 
       it('should be able to be loaded with import', async function () {
@@ -123,7 +135,8 @@ describe('module', function () {
       const pkgPath = path.join(__dirname, './ts-require');
 
       after(async () => {
-        await remove(path.join(pkgPath, './node_modules'));
+        await removeBinariesAndModules(pkgPath);
+
       });
 
       it('should be able to be loaded with require', async function () {
@@ -137,7 +150,8 @@ describe('module', function () {
       const pkgPath = path.join(__dirname, './ts-require-default');
 
       after(async () => {
-        await remove(path.join(pkgPath, './node_modules'));
+        await removeBinariesAndModules(pkgPath);
+
       });
 
       it('should be able to be loaded with require', async function () {
@@ -153,7 +167,8 @@ describe('module', function () {
       const pkgPath = path.join(__dirname, './typings/esm');
 
       after(async ()=> {
-        await remove(path.join(pkgPath, './node_modules'));
+        await removeBinariesAndModules(pkgPath);
+
       });
 
       it('should pass types check', async function () {
@@ -170,7 +185,7 @@ describe('module', function () {
       const pkgPath = path.join(__dirname, './typings/cjs');
 
       after(async ()=> {
-        await remove(path.join(pkgPath, './node_modules'));
+        await removeBinariesAndModules(pkgPath);
       });
 
       it('should pass types check', async function () {
